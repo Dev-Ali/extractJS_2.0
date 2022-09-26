@@ -12,7 +12,7 @@ import urllib.request, urllib.parse, urllib.error
 
 def request_regex(url,port): # added this so we can call it in both the prompt and argument ways of launching
     #Establish a connection
-    try:
+    try:#here we assign things like host and path
         regex = r"(/.*)"
         path = re.findall(regex, url)
         path = ''.join(str(e) for e in path)
@@ -20,7 +20,7 @@ def request_regex(url,port): # added this so we can call it in both the prompt a
         host = re.findall(regex, url)[0]
         full_url = host + str(":") + str(port) + path
         url = host
-    except:
+    except:#if theres no path we assign them here
         host = url
         full_url = url + ":" + str(port) + "/"
     if port == 80:
@@ -66,7 +66,7 @@ def request_regex(url,port): # added this so we can call it in both the prompt a
     try:        
         js_links = list()
         if re.search("^http", url):
-            connect = urllib.request.urlopen(url)
+            connect = urllib.request.urlopen(full_url)
         else:
             connect = urllib.request.urlopen(full_url)
         for line in connect:
