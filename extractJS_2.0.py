@@ -12,8 +12,25 @@ import urllib.request, urllib.parse, urllib.error
 
 def request_regex(url,port): # added this so we can call it in both the prompt and argument ways of launching
     #Establish a connection
+    try:
+        regex = r"(/.*)"
+        path = re.findall(regex, url)
+        path = ''.join(str(e) for e in path)
+        regex = r"(.*?)/"
+        host = re.findall(regex, url)[0]
+        full_url = host + str(":") + str(port) + path
+        url = host
+    except:
+        host = url
+        full_url = url + ":" + str(port) + "/"
+    if port == 80:
+        full_url = "http://" + full_url
+    else:
+        full_url = "https://" + full_url
+        pass
+    print(full_url)
     if re.search("^http", url):
-        ext = re.findall("/\S([^ ]*?)/", url)
+        ext = str(re.findall("/\S([^ ]*?)/", url))
         ext2 = ext[0]
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("-" * 50)
@@ -21,7 +38,7 @@ def request_regex(url,port): # added this so we can call it in both the prompt a
         print("[+] Hostname:", url)
         print("-" * 50)
         try:
-            request = connection.connect_ex((ext2, port))
+            request = connection.connect_ex((full_url))
             print("[+] Connected to the Webserver")
             print("[+] Extracting JavaScript URLs")
             print("-" * 50)
@@ -33,7 +50,7 @@ def request_regex(url,port): # added this so we can call it in both the prompt a
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("-" * 50)
         print("[+] Time started:", datetime.now())
-        print("[+] Hostname:", url)
+        print("[+] URL:", full_url)
         print("-" * 50)
         try:
             request = connection.connect_ex((url, port))
@@ -51,7 +68,7 @@ def request_regex(url,port): # added this so we can call it in both the prompt a
         if re.search("^http", url):
             connect = urllib.request.urlopen(url)
         else:
-            connect = urllib.request.urlopen("https://" + url)
+            connect = urllib.request.urlopen(full_url)
         for line in connect:
             var = (line.decode().strip())
             search = re.findall("https://\S+js", var)
